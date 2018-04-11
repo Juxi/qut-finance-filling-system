@@ -83,7 +83,7 @@ function showAutoFillExpense() {
 
                 var merchant = $(this).parent().parent().next().text();
                 var exType = guessTypeFromMerchant(merchant);
-                if(exType == -1) break; // no merchant type found
+                if(exType == -1) return false; // no merchant type found
                 // select dropbox
                 $(this).parent().prop('selectedIndex', offset + exType);
                 // fill justification
