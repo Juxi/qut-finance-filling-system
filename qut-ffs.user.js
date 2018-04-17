@@ -4,17 +4,16 @@
 // @version      0.2
 // @description  try to take over the world, one travel expense report at a time...
 // @author       Juxi | http://Juxi.net
+// @license      GPL version 3 or any later version; http://www.gnu.org/copyleft/gpl.html
 // @match        https://finance.qut.edu.au/OA_HTML/*
 // @require      https://code.jquery.com/jquery-2.2.0.min.js
 // @grant GM_setValue
 // @grant GM_getValue
 // @//grant        none
-// @license         MIT
 // ==/UserScript==
 // ==OpenUserJS==
 // @author juxi
 // @collaborator username
-// @license         MIT
 // ==/OpenUserJS==
 
 // expense type constants
