@@ -5,7 +5,7 @@ To install this script click on the raw of the script and tampermonkey will ask 
 
 The script will display a few options once you are in various steps along your (travel) expense reconciliation.
 
-##Currently QUT FFS can help in:
+##Currently QUT FFS can help in##
 - Step 3: QUT FFS will fill the dropdown boxes "Expense Type" and fill the justication and even will guess the tax code dropdown for you. An overlay allows you to specify domestic or international travel and to specify the travel region. Once the "RUN Auto Finance Filling System" button is pressed, the dropdowns will be selected, with a few guesses for hotels and air lines already in the code (if yours is not classified correctly, please email me or fork and update the list in the userscript), it also fills the justification with TYPE_PLACE_DATE based on the information already in the form.
 ![Step3](http://juxi.net/img/qut-ffs-step3.png)
 
