@@ -9,10 +9,12 @@
 // @grant GM_setValue
 // @grant GM_getValue
 // @//grant        none
+// @license         MIT
 // ==/UserScript==
 // ==OpenUserJS==
 // @author juxi
 // @collaborator username
+// @license         MIT
 // ==/OpenUserJS==
 
 // expense type constants
