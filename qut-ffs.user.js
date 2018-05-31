@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         QUT FFS - Finance Filling System
 // @namespace    https://github.com/Juxi/qut-finance-filling-system
-// @version      0.2
+// @version      0.21
 // @description  try to take over the world, one travel expense report at a time...
 // @author       Juxi | http://Juxi.net
 // @license      GPL-3.0
@@ -377,7 +377,7 @@ $(document).ready(function() {
             "MARRIOTT" : ACCOMODATION,
             "HGC ": ACCOMODATION,
             "Wells Fargo" : OTHER,
-
+            "UBER" : TRANSPORT,
         };
 
         // check if we know that merchant
