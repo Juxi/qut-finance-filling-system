@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         QUT FFS - Finance Filling System
 // @namespace    https://github.com/Juxi/qut-finance-filling-system
-// @version      0.21
+// @version      0.22
 // @description  try to take over the world, one travel expense report at a time...
 // @author       Juxi | http://Juxi.net
 // @license      GPL-3.0
@@ -100,8 +100,19 @@ $(document).ready(function() {
             // if it has 2 child a elements, it means we have already uploaded something
 
             if($(this).children('a').length == 1) {
-                $(this).css("border", "2px solid green");
                 // we have an attachment already
+                if(autoRunning) {
+                    // set the GM value to know we are auto clicking
+                    GM_setValue(storageKey+'AutoMissing', -1);
+                    if(currentLineNumber != lastLineNumber) {
+                        GM_setValue(storageKey+'AutoMissing', currentLineNumber+1);
+                    }
+                    // click on next button
+                    var fooCallNext = $("button[title='Next']").attr('onclick') + ";";
+                    Function(fooCallNext)();
+                } else {
+                    $(this).css("border", "2px solid green");
+                }
             } else {
                 $(this).css("border", "2px solid blue");
                 // DEBUG
