@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         QUT FFS - Finance Filling System
 // @namespace    https://github.com/Juxi/qut-finance-filling-system
-// @version      0.22
+// @version      0.3
 // @description  try to take over the world, one travel expense report at a time...
 // @author       Juxi | http://Juxi.net
 // @license      GPL-3.0
@@ -115,9 +115,6 @@ $(document).ready(function() {
                 }
             } else {
                 $(this).css("border", "2px solid blue");
-                // DEBUG
-                // console.log($(this).children('a').length + " is the value");
-
                 // do this only if we have no attachment yet!
                 // TODO upload in the future?
 
@@ -196,8 +193,10 @@ $(document).ready(function() {
             // filter for only the ones without attachment
             // if it has 2 child a elements, it means we have already uploaded something
             if($(this).children('a').length == 1) {
-                $(this).parent().css("border", "2px solid blue");
+                $(this).parent().parent().css("border", "2px solid red");
                 lineAttachment.push($(this));
+
+                // TODO maybe also make the background highlighted (especially for the how much money part (2nd column)
 
                 // DEBUG return false;
                 // stop after one element
@@ -213,10 +212,12 @@ $(document).ready(function() {
 
         /**************************/
         $('#FFS').click(function(){
+            alert("no easy way to upload all receipts this yet, you can go back to step 3 and mark all the ones missing as such in a single click!");
+
             ////////////////////////////////////
             // function uploadReceiptsForEach ()
             // loop through all
-            jQuery.each(lineAttachment, function(index, line) {
+            /* jQuery.each(lineAttachment, function(index, line) {
                 // DEBUG console.log("test: " + $(line).children('a').attr('onmouseover'));
 
                 // TODO do this only if we have a file
@@ -245,7 +246,7 @@ $(document).ready(function() {
                 });
 
 
-            });
+            });*/
         });
     }
 
@@ -320,7 +321,10 @@ $(document).ready(function() {
 
                     // fill justification, if not empty
                     var justification = $(this).parent().parent().next().next().children();
-                    if(justification.val() == "") justification.val(createJustification(exType));
+                    if(justification.val() == "") {
+                        var inputField = $(this).parent().parent().prev().prev().children(".x8").first(); //.text();
+                        justification.val(createJustification(exType, inputField));
+                    }
 
                     // select gst? (is a separate dropbox!)
                     // colour the text? $(this).parent().parent().next().css("color","red");
@@ -421,15 +425,21 @@ $(document).ready(function() {
     }
 
     /*****************************************/
-    function createJustification(expenseType) {
+    function createJustification(expenseType, dateField = null) {
         var city = $("#FFS_Destination").val();
-        var month = $('[id*="Date"]:first').val().substr(3,3);
-        var verify = $('[id*="Date"]:last').val().substr(3,3);
-        if(month != verify) month = month + "-" + verify;
+        var date = "";
+        if(dateField == null) {
+          date = $('[id*="Date"]:first').val().substr(3,3);
+          var month = $('[id*="Date"]:first').val().substr(3,3);
+          var verify = $('[id*="Date"]:last').val().substr(3,3);
+          if(month != verify) date = month + "-" + verify;
+        } else {
+            date = dateField.val().substr(0,6);
+        }
 
         fillText = textStart[expenseType];
         if(city.length > 0) fillText += city + "_";
-        fillText += month;
+        fillText += date;
 
         return fillText;
     }
