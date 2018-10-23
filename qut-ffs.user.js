@@ -1,7 +1,6 @@
 // ==UserScript==
 // @name         QUT FFS - Finance Filling System
 // @namespace    https://github.com/Juxi/qut-finance-filling-system
-// @version      0.4
 // @description  try to take over the world, one travel expense report at a time...
 // @author       Juxi | http://Juxi.net
 // @license      GPL-3.0
@@ -61,7 +60,7 @@ $(document).ready(function() {
         }
         return;
     }
-	
+
 	// Auto Navigation (and Loop!)	// TODO check for errors!
     showNavigationDiv(stepNumber);
 
@@ -122,12 +121,10 @@ $(document).ready(function() {
                 }
             } else {
                 $(this).css("border", "2px solid blue");
-
                 // do this only if we have no attachment yet!
-
                 // TODO upload in the future?
 
-                // if we have clicked "auto fill missing receipts"
+				// if we have clicked "auto fill missing receipts"
                 if(autoRunning) {
                     // DEBUG        console.log("AutoRunnnig: " + $('[id="DetailReceiptMissing"]')[0].checked);
                     $('[id="DetailReceiptMissing"]')[0].checked = true;
@@ -207,7 +204,7 @@ $(document).ready(function() {
             // click on a button
             var offset;
             // click back (or forward?) depending on currentStepNumber
-            // alert('we are auto-running?');
+            // TODO CHECK FOR ERRORS ON THE PAGE!, if we get errors stop moving to the next step!!
             if(currentStepNumber < desiredStep) {
                 // click on next button
                 var fooCall = $("button[title='Next']").attr('onclick') + ";";
@@ -242,7 +239,9 @@ $(document).ready(function() {
                 var fooCallBk = $("button[title='Back']").attr('onclick') + ";";
                 Function(fooCallBk)();
             }
-
+        });
+        $('#FFS_NAV_Stop').click(function(){
+            GM_setValue(storageKey+'AutoNav', -1);
         });
         /////////////////////////////
 
@@ -539,8 +538,10 @@ $(document).ready(function() {
     function appendNavigationHTML(currentStep, desiredStep) {
         // Create HTML
         var htmlString = '<div id="juxi-nav">';
-        if(desiredStep != -1 && desiredStep != currentStep)
+        if(desiredStep != -1 && desiredStep != currentStep) {
             htmlString += '<input type="textbox" id="FFS_navigating" name="attachments" value="Navigating to #' + desiredStep + '!"><br/>';
+            htmlString += '<input type="button" value="STOP!" id="FFS_NAV_Stop">';
+        }
 
         htmlString += '<input type="button" value="Jump to: " id="FFS_NAV">';
         htmlString += '<select id="FFS_NAV_Step">';
