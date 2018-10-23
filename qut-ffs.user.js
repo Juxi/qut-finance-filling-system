@@ -1,6 +1,7 @@
 // ==UserScript==
 // @name         QUT FFS - Finance Filling System
 // @namespace    https://github.com/Juxi/qut-finance-filling-system
+// @version      0.41
 // @description  try to take over the world, one travel expense report at a time...
 // @author       Juxi | http://Juxi.net
 // @license      GPL-3.0
@@ -48,7 +49,6 @@ $(document).ready(function() {
     var stepNumber = -1;
     if(stepText.startsWith("Step ")) stepNumber = stepText.slice(5,6);
     //DEBUG alert("We are at Step: " + stepNumber);
-
 
 	// Are we in a step which we can automate?
     if(stepNumber == -1) {
