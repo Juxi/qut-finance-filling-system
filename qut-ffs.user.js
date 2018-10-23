@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         QUT FFS - Finance Filling System
 // @namespace    https://github.com/Juxi/qut-finance-filling-system
-// @version      0.3
+// @version      0.4
 // @description  try to take over the world, one travel expense report at a time...
 // @author       Juxi | http://Juxi.net
 // @license      GPL-3.0
@@ -50,6 +50,21 @@ $(document).ready(function() {
     if(stepText.startsWith("Step ")) stepNumber = stepText.slice(5,6);
     //DEBUG alert("We are at Step: " + stepNumber);
 
+
+	// Are we in a step which we can automate?
+    if(stepNumber == -1) {
+        console.log("We did not find a step number! " + stepNumber);
+        if(stepText.startsWith("Line ")) {
+            stepText = stepText.slice(5,stepText.indexOf(" of"));
+            console.log("We are in line view! " + stepText);
+            showLineDiv(parseInt(stepText));
+        }
+        return;
+    }
+	
+	// Auto Navigation (and Loop!)	// TODO check for errors!
+    showNavigationDiv(stepNumber);
+
     // What's the current step
     if(stepNumber == 3) {
         // We are in Step 3
@@ -60,14 +75,6 @@ $(document).ready(function() {
         // We are in Step 6
         // This is where all the upload is happening!
         showAutoUploadDiv();
-    }
-    if(stepNumber == -1) {
-        console.log("We did not find a step number! " + stepNumber);
-        if(stepText.startsWith("Line ")) {
-            stepText = stepText.slice(5,stepText.indexOf(" of"));
-            console.log("We are in line view! " + stepText);
-            showLineDiv(parseInt(stepText));
-        }
     }
 
     //////////////////////////////////////////////
@@ -115,10 +122,12 @@ $(document).ready(function() {
                 }
             } else {
                 $(this).css("border", "2px solid blue");
+
                 // do this only if we have no attachment yet!
+
                 // TODO upload in the future?
 
-                // if we have clicked auto fill missing
+                // if we have clicked "auto fill missing receipts"
                 if(autoRunning) {
                     // DEBUG        console.log("AutoRunnnig: " + $('[id="DetailReceiptMissing"]')[0].checked);
                     $('[id="DetailReceiptMissing"]')[0].checked = true;
@@ -179,7 +188,70 @@ $(document).ready(function() {
     }
 
 
-    /****************************/
+    /*****************************/
+    function showNavigationDiv(currentStepNumber) {
+        // Append HTML
+        var desiredStep = GM_getValue(storageKey+'AutoNav', "-1");
+
+        GM_setValue(storageKey+'AutoNav', -1);
+        appendNavigationHTML (currentStepNumber, desiredStep);
+
+        var autoRunning = (desiredStep != -1) && (currentStepNumber != desiredStep);
+
+        if(autoRunning) {
+            console.log("We are auto navigating to: " + desiredStep);
+            // set the GM value to know we are auto clicking
+            if(currentStepNumber != desiredStep) {
+                GM_setValue(storageKey+'AutoNav', desiredStep);
+            }
+            // click on a button
+            var offset;
+            // click back (or forward?) depending on currentStepNumber
+            // alert('we are auto-running?');
+            if(currentStepNumber < desiredStep) {
+                // click on next button
+                var fooCall = $("button[title='Next']").attr('onclick') + ";";
+                Function(fooCall)();
+            } else {
+                // click on back button
+                var fooCallBk = $("button[title='Back']").attr('onclick') + ";";
+                Function(fooCallBk)();
+            }
+        }else{ console.log("We are NOT auto navigating!"); }
+
+
+        /******************************/
+        $('#FFS_NAV').click(function(){
+            //////////////////////////////
+            // function fillExpenseType ()
+            // store settings
+
+            var selectedStep = document.getElementById('FFS_NAV_Step').value;
+            // alert("Navigation to Step " + selectedStep);
+            GM_setValue(storageKey+'AutoNav', selectedStep);
+
+            // clickForDesiredStep(currentStepNumber, desiredStep);
+            var offset;
+            // click back (or forward?) depending on currentStepNumber
+            if(currentStepNumber < selectedStep) {
+                // click on next button
+                var fooCall = $("button[title='Next']").attr('onclick') + ";";
+                Function(fooCall)();
+            } else {
+                // click on back button
+                var fooCallBk = $("button[title='Back']").attr('onclick') + ";";
+                Function(fooCallBk)();
+            }
+
+        });
+        /////////////////////////////
+
+    }
+    /***************************************/
+
+
+
+    /*****************************/
     function showAutoUploadDiv() {
         // Append HTML
         appendStep6HTML ();
@@ -193,22 +265,39 @@ $(document).ready(function() {
             // filter for only the ones without attachment
             // if it has 2 child a elements, it means we have already uploaded something
             if($(this).children('a').length == 1) {
-                $(this).parent().parent().css("border", "2px solid red");
-                lineAttachment.push($(this));
-
-                // TODO maybe also make the background highlighted (especially for the how much money part (2nd column)
-
-                // DEBUG return false;
-                // stop after one element
-
+                // check if missing receipt is ticked!
+                var theElement = $(this).parent().siblings(":nth-of-type(8)");
+                // DEBUG  console.log(theElement.first().html());
+                if(theElement.first().html().startsWith("<img")) {
+                    theElement.css("border", "2px solid blue");
+                }else{
+                    $(this).parent().parent().css("border", "2px solid red");
+                    lineAttachment.push($(this));
+                    // TODO maybe also make the background highlighted (especially for the how much money part (2nd column)
+                }
             } else {
                 $(this).parent().css("border", "2px solid green");
+                $(this).parent().css("background", "rgba(0,200,0,0.2");
                 // DEBUG console.log($(this).children('a').length + " is the value");
             }
             // DEBUG alert("# of elements:" + lineAttachment.length);
         });
 
         $("#FFS_MissingAttachments").val(lineAttachment.length + " attachments missing!").css("visibility", "visible");
+
+        // hightlight missing approvals
+        var element = $('span[id*="ReviewGenInfoHeaderAttachments"]');   // "N3:ExpenseType:0"
+        // DEBUG alert(element.length) ; //children('a').length);
+        if(element.length == 1) {
+            // check if missing receipt is ticked!
+            element.parent().siblings().css("border", "3px solid red");
+            element.parent().css("border", "3px solid red");
+        } else {
+            // no such element exists!
+            $('a[id*="ReviewGenInfoHeaderAttachments"]').parent().css("border", "1px solid green");
+            $('a[id*="ReviewGenInfoHeaderAttachments"]').parent().css("background", "rgba(0,200,0,0.2)");
+            $('a[id*="ReviewGenInfoHeaderAttachments"]').parent().siblings().css("background", "rgba(0,200,0,0.2)");
+        }
 
         /**************************/
         $('#FFS').click(function(){
@@ -372,7 +461,6 @@ $(document).ready(function() {
     }
     /***************************************/
 
-
     /********************************************/
     function guessTypeFromMerchant(merchantText) {
         // DEBUG alert("text " + merchantText);
@@ -383,17 +471,20 @@ $(document).ready(function() {
         var knownMerchants = {
             "CORPORATE TRAVEL MANAG" : OTHER,
             "QANTAS" : AIRFARES,
+            "EMIRATES" : AIRFARES,
             "AIR " : AIRFARES,
             "AUSTRIAN A" : AIRFARES,
             "COFFEE" : MEALS,
             "CAFE" : MEALS,
             "CAB": TRANSPORT,
             "DB BAHN" : TRANSPORT,
-            "TAXI" : TRANSPORT,
+            "GOEURO" : TRANSPORT,
+            "HGC ": ACCOMODATION,
             "HOTEL": ACCOMODATION,
             "MARRIOTT" : ACCOMODATION,
-            "HGC ": ACCOMODATION,
+            "METRO " : TRANSPORT,
             "Wells Fargo" : OTHER,
+            "TAXI" : TRANSPORT,
             "UBER" : TRANSPORT,
         };
 
@@ -429,21 +520,44 @@ $(document).ready(function() {
         var city = $("#FFS_Destination").val();
         var date = "";
         if(dateField == null) {
-          date = $('[id*="Date"]:first').val().substr(3,3);
-          var month = $('[id*="Date"]:first').val().substr(3,3);
-          var verify = $('[id*="Date"]:last').val().substr(3,3);
-          if(month != verify) date = month + "-" + verify;
+            date = $('[id*="Date"]:first').val().substr(3,3);
+            var month = $('[id*="Date"]:first').val().substr(3,3);
+            var verify = $('[id*="Date"]:last').val().substr(3,3);
+            if(month != verify) date = month + "-" + verify;
         } else {
             date = dateField.val().substr(0,6);
         }
 
-        fillText = textStart[expenseType];
+        var fillText = textStart[expenseType];
         if(city.length > 0) fillText += city + "_";
         fillText += date;
 
         return fillText;
     }
 
+    /********************************/
+    function appendNavigationHTML(currentStep, desiredStep) {
+        // Create HTML
+        var htmlString = '<div id="juxi-nav">';
+        if(desiredStep != -1 && desiredStep != currentStep)
+            htmlString += '<input type="textbox" id="FFS_navigating" name="attachments" value="Navigating to #' + desiredStep + '!"><br/>';
+
+        htmlString += '<input type="button" value="Jump to: " id="FFS_NAV">';
+        htmlString += '<select id="FFS_NAV_Step">';
+        if(currentStep != 1) htmlString += '<option value="1">Step 1</option>';
+        if(currentStep != 2) htmlString += '<option value="2">Step 2</option>';
+        if(currentStep != 3) htmlString += '<option value="3">Step 3</option>';
+        if(currentStep != 4) htmlString += '<option value="4">Step 4</option>';
+        if(currentStep != 5) htmlString += '<option value="5">Step 5</option>';
+        if(currentStep != 6) htmlString += '<option value="6">Step 6</option>';
+        htmlString += '</select>';
+        htmlString += '</div>';
+
+        // Append HTML
+        $('body').append(htmlString);
+
+        addStyle(0);
+    }
     /***************************************/
     function appendStep3HTML() {
         // load setting variables (stored previously;
@@ -489,7 +603,7 @@ $(document).ready(function() {
     }
 
     /********************************/
-    function     appendLineHTML() {
+    function appendLineHTML() {
         // load settings?
 
         // Create HTML
@@ -510,11 +624,19 @@ $(document).ready(function() {
     /**************************/
     function addStyle(step) {
         // Add stylesheet to divs
-        var color = [ "", "", "", "rgba(182, 22, 40, 0.75)", // Step 3
-                     "", "", "rgba(22, 2, 182, 0.75)" // step 6
+        var color = [ "rgba(60, 120, 40, 0.75)", // Step 0 -- navigation
+                     "", "",
+                     "rgba(182, 22, 40, 0.75)", // Step 3
+                     "", "",
+                     "rgba(22, 2, 182, 0.75)" // step 6
                     ];
-        $("#juxi").css("position", "fixed").css("top", 200).css("left", 200);
-        $("#juxi").css("background", color[step]).css("padding", "20px").css("color", "white");
+        if(step == 0) { // this is now for navigation
+            $("#juxi-nav").css("position", "fixed").css("top", 20).css("left", 302);
+            $("#juxi-nav").css("background", color[step]).css("padding", "20px").css("color", "white");
+        }else{
+            $("#juxi").css("position", "fixed").css("top", 200).css("left", 200);
+            $("#juxi").css("background", color[step]).css("padding", "20px").css("color", "white");
+        }
         //        $("#juxi").css("background", "rgba(182, 2, 20,0.75)").css("padding", "20px").css("color", "white");
         //$("#FFS").css("background", "rgba(182, 2, 20,0.75)").css("padding", "20px").css("color", "white");
     }
