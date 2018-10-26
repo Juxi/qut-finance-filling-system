@@ -1,12 +1,22 @@
 # QUT FFS (finance-filling-system)
-A greasemonkey/tempermonkey script that helps filling in travel expenses in QUT's iexpense webform
+A greasemonkey / Tampermonkey script that helps filling in travel expenses in QUT's iexpense webform
 
-To install this script click on the raw of the script and tampermonkey will ask you to import it (it Tampermonkey is installed already).
+To install this script click on the raw of the script file here and tampermonkey will ask you to import it (it Tampermonkey is installed already, if not follow the instructions below).
 
 The script will display a few options once you are in various steps along your (travel) expense reconciliation.
 
-## Currently QUT FFS can help in
+## Currently QUT FFS can help with:
 
+- auto selection of drop down boxes (because how many clicks does it take you to select: STAFF TRAVEL - DOMESTIC - TRANSPORT OTHER 10 times in a row?)
+- auto filling of the Justification (so all the underscores are in the right places, at least until they change it again)
+- easier navigation from Step 6 back to Step 3, because you have forgotten an attachment and for some reason you can’t click on missing receipt in step 6…
+- auto clicking of missing receipts (why is that not built in?!!)
+- some visual highlighting of attachments and what is still missing
+- and a few other little things…
+
+---
+
+## User Guide:
 - Step 3: QUT FFS will fill the dropdown boxes "Expense Type" and fill the justication and even will guess the tax code dropdown for you. An overlay allows you to specify domestic or international travel and to specify the travel region. Once the "RUN Auto Finance Filling System" button is pressed, the dropdowns will be selected, with a few guesses for hotels and air lines already in the code (if yours is not classified correctly, please email me or fork and update the list in the userscript), it also fills the justification with TYPE_PLACE_DATE based on the information already in the form.
 ![Step3](http://juxi.net/img/qut-ffs-step3.png)
 
@@ -18,7 +28,6 @@ The script will display a few options once you are in various steps along your (
 
 
 ---
-
 
 
 ### Installing and Using Tampermonkey
