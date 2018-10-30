@@ -17,11 +17,16 @@ The script will display a few options once you are in various steps along your (
 ---
 
 ## User Guide:
+
 - Step 3: QUT FFS will fill the dropdown boxes "Expense Type" and fill the justication and even will guess the tax code dropdown for you. An overlay allows you to specify domestic or international travel and to specify the travel region. Once the "RUN Auto Finance Filling System" button is pressed, the dropdowns will be selected, with a few guesses for hotels and air lines already in the code (if yours is not classified correctly, please email me or fork and update the list in the userscript), it also fills the justification with TYPE_PLACE_DATE based on the information already in the form.
 ![Step3](http://juxi.net/img/qut-ffs-step3.png)
 
 - Line mode: if you have lost some receipts and need to click missing receipts, FFS automates this. After you have uploaded all receipts you have you can click on the details of any line in Step 3 (currently best to do that for the first line you do not have a receipt for). In the line view a different overlay will allow you to check all missing receipts by clicking the "check all missing receipts" button. It ticks the tick mark (if no uploads are registered) and will click next until it reaches the last line element.
 ![LineExpense](http://juxi.net/img/qut-ffs-line.png)
+
+- Step 1, 2 and 4: are simple and/or not used by me and so have no automation, feel free to add to the script or suggest edits
+
+- Step 5: the QUT finance system actually has a decent way of storing your account codes already (under My Allocation), so no need for FFS in this section
 
 - Step 6: currently in progress to help with the upload, but not working yet.
 
